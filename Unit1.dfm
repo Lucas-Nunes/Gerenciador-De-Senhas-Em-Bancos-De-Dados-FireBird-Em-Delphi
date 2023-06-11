@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 0
   BorderStyle = bsSingle
   Caption = 'Senhas'
-  ClientHeight = 749
-  ClientWidth = 1196
+  ClientHeight = 500
+  ClientWidth = 1192
   Color = clNone
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,10 +17,10 @@ object Form1: TForm1
   object ImageBackground: TImage
     Left = 0
     Top = 0
-    Width = 1196
-    Height = 749
+    Width = 1192
+    Height = 500
     Align = alClient
-    Stretch = True
+    ExplicitWidth = 1196
   end
   object edtSenha: TEdit
     Left = 24

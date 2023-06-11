@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics,Vcl.Controls,Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.IOUtils,
   System.Types, Vcl.ExtCtrls, FireDAC.Comp.Client, FireDAC.Phys.FB, FireDAC.UI.Intf,
-  FireDAC.VCLUI.Wait,FireDAC.Stan.Def,FireDAC.DApt,FireDAC.Stan.Async, JPEG;
+  FireDAC.VCLUI.Wait,FireDAC.Stan.Def,FireDAC.DApt,FireDAC.Stan.Async, Vcl.Imaging.pngimage;
 
 type
   TForm1 = class(TForm)
@@ -44,7 +44,8 @@ begin
         PanelBancos.Controls[i].Free;
       end;
 
-    if (Trim(texto) <> '') then
+    try
+      if (Trim(texto) <> '') then
       begin
           var RadioButtonBancos: TRadioButton;
           var DiretorioPai := GetCurrentDir;
@@ -66,7 +67,7 @@ begin
 
           for subPasta in subPastas do
             begin
-              if stop = 46 then
+              if stop = 31 then
                 Break;
               NomeDaPasta := ExtractFileName(subPasta);
 
@@ -111,18 +112,44 @@ begin
         end;
         BancoInicial(Self);
       end;
+    except
+       on E:Exception do
+       begin
+          ShowMessage(E.Message);
+          Application.Terminate;
+       end;
+    end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var PngImage: TPngImage;
+    Stream: TResourceStream;
 begin
-  var Stream: TResourceStream;
-  Stream := TResourceStream.Create(HInstance, 'IMG_FUNDO', RT_RCDATA);
-  ImageBackground.Picture.LoadFromStream(Stream);
+  try
+    Stream := TResourceStream.Create(HInstance, 'IMG_FUNDO', RT_RCDATA);
+    PngImage := TPngImage.Create;
+
+    try
+      PngImage.LoadFromStream(Stream);
+      ImageBackground.Picture.Graphic := PngImage;
+    finally
+      PngImage.Free;
+      Stream.Free;
+    end;
+  except
+    on E:Exception do
+      begin
+        ShowMessage(E.Message);
+        Application.Terminate;
+      end;
+  end;
   BancoInicial(Sender);
 end;
 
 procedure TForm1.BancoInicial(Sender: TObject);
 begin
+
+  try
   var RadioButtonBancos: TRadioButton;
   var DiretorioPai := GetCurrentDir;
   var DiretorioRaiz := TPath.Combine(DiretorioPai, '..');
@@ -152,7 +179,7 @@ begin
 
   for subPasta in subPastas do
     begin
-      if stop = 46 then
+      if stop = 31 then
         Break;
       NomeDaPasta := ExtractFileName(subPasta);
       if rest = 5 then
@@ -184,55 +211,83 @@ begin
       Inc(rest);
       Inc(stop);
     end;
+  except
+    on E: Exception do
+      begin
+        ShowMessage('Pasta dados não encontrada!'+sLineBreak+'Erro: '+E.Message);
+        Application.Terminate;
+      end;
+  end;
 end;
 
 procedure TForm1.RadioButtonBancosChecked(Sender: TObject);
 begin
-  var DiretorioPai := GetCurrentDir;
-  var DiretorioRaiz := TPath.Combine(DiretorioPai, '..');
-  var PastaDados := TPath.Combine(DiretorioRaiz,'dados');
-  var Dados :=  TPath.Combine(PastaDados,TRadioButton(Sender).Caption);
-  var CaminhoParaDados: string := TPath.Combine(Dados,'dadosemp.fdb');
-
-  var FDConnection1: TFDConnection;
-  FDConnection1 := TFDConnection.Create(nil);
-  FDConnection1.DriverName := 'FB';
-  FDConnection1.Params.Add('Database='+CaminhoParaDados);
-  FDConnection1.Params.Add('User_Name=sysdba');
-  FDConnection1.Params.Add('Password=masterkey');
-  FDConnection1.Connected := True;
-
-  var FDQuery1: TFDQuery;
-  var Msg: string;
-
-  FDQuery1 := TFDQuery.Create(nil);
-  FDQuery1.Connection := FDConnection1;
-  FDQuery1.SQL.Text := 'select nome,senha from usuarios;';
-  FDQuery1.Open;
-
-  Msg := '';
-  FDQuery1.First;
-  while not FDQuery1.Eof do
-  begin
-    Msg := Msg + 'Nome: ' + FDQuery1.FieldByName('nome').AsString + sLineBreak;
-    Msg := Msg + 'Senha: ' + FDQuery1.FieldByName('senha').AsString + sLineBreak;
-    Msg := Msg + sLineBreak;
-
-    FDQuery1.Next;
-  end;
-
-  ShowMessage(Msg);
-
-  FDQuery1.Free;
-  FDConnection1.Free;
-
   var i: Integer;
-  for i := PanelBancos.ControlCount - 1 downto 0 do
-  begin
-      PanelBancos.Controls[i].Free;
-  end;
-  BancoInicial(Self);
+  try
+    var DiretorioPai := GetCurrentDir;
+    var DiretorioRaiz := TPath.Combine(DiretorioPai, '..');
+    var PastaDados := TPath.Combine(DiretorioRaiz,'dados');
+    var Dados :=  TPath.Combine(PastaDados,TRadioButton(Sender).Caption);
+    var CaminhoParaDados: string := TPath.Combine(Dados,'dadosemp.fdb');
 
+    var FDConnection1: TFDConnection;
+    FDConnection1 := TFDConnection.Create(nil);
+    FDConnection1.DriverName := 'FB';
+    FDConnection1.Params.Add('Database='+CaminhoParaDados);
+    FDConnection1.Params.Add('User_Name=sysdba');
+    FDConnection1.Params.Add('Password=masterkey');
+    FDConnection1.Connected := True;
+
+    var FDQuery1: TFDQuery;
+    var Msg: string;
+    try
+      FDQuery1 := TFDQuery.Create(nil);
+      FDQuery1.Connection := FDConnection1;
+      FDQuery1.SQL.Text := 'select nome,senha from usuarios;';
+      FDQuery1.Open;
+
+      Msg := '';
+      FDQuery1.First;
+      while not FDQuery1.Eof do
+      begin
+        Msg := Msg + 'Nome: ' + FDQuery1.FieldByName('nome').AsString + sLineBreak;
+        Msg := Msg + 'Senha: ' + FDQuery1.FieldByName('senha').AsString + sLineBreak;
+        Msg := Msg + sLineBreak;
+
+        FDQuery1.Next;
+      end;
+
+      ShowMessage(Msg);
+
+      FDQuery1.Free;
+      FDConnection1.Free;
+    except
+      on E: Exception do
+      begin
+        ShowMessage('Erro ao conectar-se ao banco de dados.'+ sLineBreak + 'Erro: ' + E.Message);
+        for i := PanelBancos.ControlCount - 1 downto 0 do
+        begin
+            PanelBancos.Controls[i].Free;
+        end;
+        BancoInicial(Self);
+      end;
+    end;
+    for i := PanelBancos.ControlCount - 1 downto 0 do
+    begin
+        PanelBancos.Controls[i].Free;
+    end;
+    BancoInicial(Self);
+  except
+    on E: Exception do
+      begin
+        ShowMessage(E.Message);
+        for i := PanelBancos.ControlCount - 1 downto 0 do
+        begin
+            PanelBancos.Controls[i].Free;
+        end;
+        BancoInicial(Self);
+      end;
+  end;
 end;
 
 end.

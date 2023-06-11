@@ -1,5 +1,9 @@
 program Senhas;
 
+
+
+
+
 {$R *.dres}
 
 uses
