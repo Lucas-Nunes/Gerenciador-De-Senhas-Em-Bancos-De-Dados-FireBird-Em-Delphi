@@ -4,7 +4,7 @@
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -109,9 +109,9 @@
         <UWP_DelphiLogo150>Rnv_Ico.ico</UWP_DelphiLogo150>
         <VerInfo_Private>true</VerInfo_Private>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.16;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;PrivateBuild=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.18;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;PrivateBuild=</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <VerInfo_Build>16</VerInfo_Build>
+        <VerInfo_Build>18</VerInfo_Build>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -121,7 +121,7 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <RcItem Include="..\..\..\..\..\Pictures\fundo2.png">
+        <RcItem Include="Imagens\fundo2.png">
             <ResourceType>RCDATA</ResourceType>
             <ResourceId>IMG_FUNDO</ResourceId>
         </RcItem>
@@ -157,6 +157,12 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName="Imagens\fundo2.png" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win32">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Project1_Icon1.ico" Configuration="Debug" Class="UWP_DelphiLogo44">
                     <Platform Name="Win32">
                         <RemoteDir>Assets\</RemoteDir>
@@ -172,6 +178,12 @@
                     </Platform>
                 </DeployFile>
                 <DeployFile LocalName="Win32\Debug\Senhas.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>Senhas.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Release\Senhas.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>Senhas.exe</RemoteName>
                         <Overwrite>true</Overwrite>

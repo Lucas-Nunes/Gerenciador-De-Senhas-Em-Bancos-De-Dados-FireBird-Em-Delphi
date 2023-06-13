@@ -21,6 +21,7 @@ type
 
   var Form1: TForm1;
   var PanelBancos: TPanel;
+  var PanelBancosCriado: Boolean = False;
 
 implementation
 
@@ -39,10 +40,12 @@ begin
     var i: Integer;
     var radioButton: TRadioButton;
 
-    for i := PanelBancos.ControlCount - 1 downto 0 do
-      begin
-        PanelBancos.Controls[i].Free;
-      end;
+    LockWindowUpdate(PanelBancos.Handle);
+
+    while PanelBancos.ControlCount > 0 do
+    begin
+      PanelBancos.Controls[0].Free;
+    end;
 
     try
       if (Trim(texto) <> '') then
@@ -103,12 +106,14 @@ begin
                   Inc(stop);
                 end;
             end;
+            LockWindowUpdate(0);
       end
     else
       begin
-        for i := PanelBancos.ControlCount - 1 downto 0 do
+        LockWindowUpdate(PanelBancos.Handle);
+        while PanelBancos.ControlCount > 0 do
         begin
-            PanelBancos.Controls[i].Free;
+          PanelBancos.Controls[0].Free;
         end;
         BancoInicial(Self);
       end;
@@ -165,15 +170,20 @@ begin
   var PanelName: String;
   var stop: Integer := 1;
 
-  PanelBancos := TPanel.Create(Self);
-  PanelBancos.Parent := Form1;
-  PanelBancos.Left := 10;
-  PanelBancos.Top := 100;
-  PanelBancos.Width := 1170;
-  PanelBancos.Height := 600;
-  PanelBancos.BevelOuter := bvNone;
-  PanelBancos.ParentBackground := True;
-  PanelBancos.Color := clNone;
+
+  if not PanelBancosCriado then
+  begin
+    PanelBancos := TPanel.Create(Self);
+    PanelBancos.Parent := Form1;
+    PanelBancos.Left := 10;
+    PanelBancos.Top := 100;
+    PanelBancos.Width := 1170;
+    PanelBancos.Height := 600;
+    PanelBancos.BevelOuter := bvNone;
+    PanelBancos.ParentBackground := True;
+    PanelBancos.Color := clNone;
+    PanelBancosCriado := True;
+  end;
 
   subPastas := TDirectory.GetDirectories(PastaDados);
 
@@ -211,6 +221,7 @@ begin
       Inc(rest);
       Inc(stop);
     end;
+    LockWindowUpdate(0);
   except
     on E: Exception do
       begin
@@ -265,25 +276,29 @@ begin
       on E: Exception do
       begin
         ShowMessage('Erro ao conectar-se ao banco de dados.'+ sLineBreak + 'Erro: ' + E.Message);
-        for i := PanelBancos.ControlCount - 1 downto 0 do
+        LockWindowUpdate(PanelBancos.Handle);
+        while PanelBancos.ControlCount > 0 do
         begin
-            PanelBancos.Controls[i].Free;
+          PanelBancos.Controls[0].Free;
         end;
+
         BancoInicial(Self);
       end;
     end;
-    for i := PanelBancos.ControlCount - 1 downto 0 do
+    LockWindowUpdate(PanelBancos.Handle);
+    while PanelBancos.ControlCount > 0 do
     begin
-        PanelBancos.Controls[i].Free;
+      PanelBancos.Controls[0].Free;
     end;
     BancoInicial(Self);
   except
     on E: Exception do
       begin
         ShowMessage(E.Message);
-        for i := PanelBancos.ControlCount - 1 downto 0 do
+        LockWindowUpdate(PanelBancos.Handle);
+        while PanelBancos.ControlCount > 0 do
         begin
-            PanelBancos.Controls[i].Free;
+          PanelBancos.Controls[0].Free;
         end;
         BancoInicial(Self);
       end;
